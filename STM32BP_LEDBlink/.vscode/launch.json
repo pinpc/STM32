@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "cortex-debug",
+            "request": "launch",
+            "name": "Blue Pill – ST-Link Debug",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build Blue Pill firmware",
+            "executable": "${workspaceFolder}/build-direct/BluePill_STLink_Test.elf",
+            "servertype": "stlink",
+            "device": "STM32F103C8",
+            "interface": "swd",
+            "svdFile": "C:/ST/STM32CubeCLT_1.23.0/STMicroelectronics_CMSIS_SVD/STM32F103.svd",
+            "gdbPath": "C:/ST/STM32CubeCLT_1.23.0/GNU-tools-for-STM32/bin/arm-none-eabi-gdb.exe",
+            "stlinkPath": "C:/ST/STM32CubeCLT_1.23.0/STLink-gdb-server/bin/ST-LINK_gdbserver.exe",
+            "runToEntryPoint": "main",
+            "showDevDebugOutput": "raw"
+        }
+    ]
+}

@@ -1,0 +1,11 @@
+# Generated build output
+build/
+build-*/
+*.elf
+*.hex
+*.map
+*.o
+*.d
+
+# Local VS Code state
+.vscode/.ropeproject/
