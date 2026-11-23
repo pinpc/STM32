@@ -1,0 +1,50 @@
+#ifndef STM32F1xx_HAL_CONF_H
+#define STM32F1xx_HAL_CONF_H
+
+#define HAL_MODULE_ENABLED
+#define HAL_GPIO_MODULE_ENABLED
+#define HAL_RCC_MODULE_ENABLED
+#define HAL_FLASH_MODULE_ENABLED
+#define HAL_PWR_MODULE_ENABLED
+#define HAL_CORTEX_MODULE_ENABLED
+#define HAL_DMA_MODULE_ENABLED
+#define HAL_TIM_MODULE_ENABLED
+
+#define HSE_VALUE 8000000U
+#define HSE_STARTUP_TIMEOUT 100U
+#define HSI_VALUE 8000000U
+#define LSE_VALUE 32768U
+#define LSE_STARTUP_TIMEOUT 5000U
+#define LSI_VALUE 40000U
+#define VDD_VALUE 3300U
+#define TICK_INT_PRIORITY 15U
+#define USE_RTOS 0U
+#define PREFETCH_ENABLE 1U
+#define USE_HAL_ADC_REGISTER_CALLBACKS 0U
+#define USE_HAL_CAN_REGISTER_CALLBACKS 0U
+#define USE_HAL_COMP_REGISTER_CALLBACKS 0U
+#define USE_HAL_CEC_REGISTER_CALLBACKS 0U
+#define USE_HAL_DAC_REGISTER_CALLBACKS 0U
+#define USE_HAL_I2C_REGISTER_CALLBACKS 0U
+#define USE_HAL_UART_REGISTER_CALLBACKS 0U
+#define USE_HAL_PCCARD_REGISTER_CALLBACKS 0U
+#define USE_HAL_RTC_REGISTER_CALLBACKS 0U
+#define USE_HAL_SPI_REGISTER_CALLBACKS 0U
+#define USE_HAL_TIM_REGISTER_CALLBACKS 0U
+#define USE_HAL_PCD_REGISTER_CALLBACKS 0U
+#define USE_HAL_HCD_REGISTER_CALLBACKS 0U
+
+/* HAL common definitions and enabled module interfaces. */
+#include "stm32f1xx_hal_rcc.h"
+#include "stm32f1xx_hal_gpio.h"
+#include "stm32f1xx_hal_cortex.h"
+#include "stm32f1xx_hal_flash.h"
+#include "stm32f1xx_hal_pwr.h"
+#include "stm32f1xx_hal_dma.h"
+#include "stm32f1xx_hal_tim.h"
+
+#ifndef USE_FULL_ASSERT
+#define assert_param(expr) ((void)0U)
+#endif
+
+#endif

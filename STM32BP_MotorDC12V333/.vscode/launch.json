@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "STM32BP Motor – ST-Link Debug",
+      "type": "cortex-debug",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "Build STM32BP Motor project",
+      "executable": "${workspaceFolder}/build-arm/STM32BP_MotorDC12V333.elf",
+      "servertype": "stlink",
+      "device": "STM32F103C8",
+      "interface": "swd",
+      "runToEntryPoint": "main",
+      "gdbPath": "C:/ST/STM32CubeCLT_1.23.0/GNU-tools-for-STM32/bin/arm-none-eabi-gdb.exe",
+      "stlinkPath": "C:/ST/STM32CubeCLT_1.23.0/STLink-gdb-server/bin/ST-LINK_gdbserver.exe",
+      "svdFile": "C:/ST/STM32CubeCLT_1.23.0/STMicroelectronics_CMSIS_SVD/STM32F103.svd",
+      "showDevDebugOutput": "raw"
+    }
+  ]
+}

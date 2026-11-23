@@ -1,0 +1,6 @@
+build/
+build-arm/
+*.elf
+*.hex
+*.map
+.vscode/.cortex-debug.*
