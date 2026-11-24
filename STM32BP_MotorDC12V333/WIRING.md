@@ -42,13 +42,13 @@ schalten.
 
 | Encoder-Signal | Blue Pill STM32F103C8T6 | Funktion |
 |---|---|---|
-| Kanal A / C1 | PA6 | TIM3_CH1 |
-| Kanal B / C2 | PA7 | TIM3_CH2 |
+| Kanal A / C1 | PA8 | TIM1_CH1 |
+| Kanal B / C2 | PA9 | TIM1_CH2 |
 | Encoder-GND | GND | Gemeinsame Masse |
 | Encoder-VCC | Versorgung gemaess Motordatenblatt | Encoder-Versorgung |
 
-PA6 und PA7 sind im Programm als Eingänge mit Pull-up konfiguriert und werden
-von TIM3 im Quadratur-Encoder-Modus gelesen. Vor dem Verbinden der Encoder-
+PA8 und PA9 sind im Programm als Eingänge mit Pull-up konfiguriert und werden
+von TIM1 im Quadratur-Encoder-Modus gelesen. Vor dem Verbinden der Encoder-
 Signale sicherstellen, dass deren HIGH-Pegel maximal 3.3 V betraegt. Falls der
 Encoder 5 V-Signale ausgibt, einen geeigneten Pegelwandler verwenden. Die
 Kabelfarben und die Encoder-Versorgung unterscheiden sich je nach JGB37-520-

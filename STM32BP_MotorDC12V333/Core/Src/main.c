@@ -4,28 +4,28 @@
 
 /*
  * Configure this for the exact encoder and gearbox. 1320 is a working
- * assumption for an 11-edge/rev motor encoder, 30:1 gearbox and TIM3 x4
- * quadrature counting. Check the motor datasheet or calibrate before relying
+ * assumption for an 11-edge/rev motor encoder, 30:1 gearbox and TIM1 x4
+ * quadrature counting on TIM1. Check the motor datasheet or calibrate before relying
  * on the displayed RPM.
  */
 #define ENCODER_COUNTS_PER_OUTPUT_REV 1320U
 #define RPM_SAMPLE_MIN_MS 1U
 
 TIM_HandleTypeDef htim2;
-TIM_HandleTypeDef htim3;
+TIM_HandleTypeDef htim1;
 volatile int32_t g_motor_rpm = 0; /* Watch this variable in the debugger. */
 
 static void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM2_PWM_Init(void);
-static void MX_TIM3_Encoder_Init(void);
+static void MX_TIM1_Encoder_Init(void);
 static void MotorTask(void *argument);
 
 static int32_t Motor_GetRpm(uint16_t current_count,
                             uint16_t previous_count,
                             uint32_t elapsed_ms)
 {
-    /* TIM3 is a 16-bit up/down counter; correct the subtraction across wrap. */
+    /* TIM1 is a 16-bit up/down counter; correct the subtraction across wrap. */
     int32_t delta_counts = (int32_t)current_count - (int32_t)previous_count;
     if (delta_counts > 32767) {
         delta_counts -= 65536;
@@ -65,11 +65,11 @@ int main(void)
     SystemClock_Config();
     MX_GPIO_Init();
     MX_TIM2_PWM_Init();
-    MX_TIM3_Encoder_Init();
+    MX_TIM1_Encoder_Init();
 
     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
-    HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
+    HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_ALL);
 
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0 | GPIO_PIN_1, GPIO_PIN_SET);
     Motor_SetSignedPwm(0); /* safe startup: motor remains stopped */
@@ -83,7 +83,7 @@ int main(void)
 static void MotorTask(void *argument)
 {
     (void)argument;
-    uint16_t previous_count = (uint16_t)__HAL_TIM_GET_COUNTER(&htim3);
+    uint16_t previous_count = (uint16_t)__HAL_TIM_GET_COUNTER(&htim1);
     uint32_t previous_time = HAL_GetTick();
 
     for (;;) {
@@ -91,7 +91,7 @@ static void MotorTask(void *argument)
 
         uint32_t now = HAL_GetTick();
         uint32_t elapsed_ms = now - previous_time;
-        uint16_t current_count = (uint16_t)__HAL_TIM_GET_COUNTER(&htim3);
+        uint16_t current_count = (uint16_t)__HAL_TIM_GET_COUNTER(&htim1);
 
         if (elapsed_ms >= RPM_SAMPLE_MIN_MS) {
             g_motor_rpm = Motor_GetRpm(current_count, previous_count, elapsed_ms);
@@ -135,6 +135,7 @@ static void SystemClock_Config(void)
 static void MX_TIM2_PWM_Init(void)
 {
     TIM_OC_InitTypeDef oc = {0};
+    __HAL_RCC_TIM2_CLK_ENABLE();
     htim2.Instance = TIM2;
     /* With a 72 MHz TIM2 clock, PSC=71 gives a 1 MHz counter tick;
      * ARR=999 gives a 1 kHz PWM period. HAL writes TIM2_PSC, TIM2_ARR,
@@ -153,18 +154,19 @@ static void MX_TIM2_PWM_Init(void)
     HAL_TIM_PWM_ConfigChannel(&htim2, &oc, TIM_CHANNEL_2);
 }
 
-static void MX_TIM3_Encoder_Init(void)
+static void MX_TIM1_Encoder_Init(void)
 {
     TIM_Encoder_InitTypeDef encoder = {0};
-    htim3.Instance = TIM3;
-    /* TIM3 counts both encoder inputs (TI1 and TI2) in encoder mode 3.
+    __HAL_RCC_TIM1_CLK_ENABLE();
+    htim1.Instance = TIM1;
+    /* TIM1 counts both encoder inputs (TI1 and TI2) in encoder mode 3.
      * PSC=0 keeps every qualified edge; ARR=0xFFFF makes CNT wrap at 16 bits.
-     * HAL configures TIM3_SMCR, CCMR1, CCER, PSC and ARR.
+     * HAL configures TIM1_SMCR, CCMR1, CCER, PSC and ARR.
      */
-    htim3.Init.Prescaler = 0;
-    htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-    htim3.Init.Period = 0xFFFF;
-    htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+    htim1.Init.Prescaler = 0;
+    htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
+    htim1.Init.Period = 0xFFFF;
+    htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
     encoder.EncoderMode = TIM_ENCODERMODE_TI12;
     encoder.IC1Polarity = TIM_ICPOLARITY_RISING;
     encoder.IC1Selection = TIM_ICSELECTION_DIRECTTI;
@@ -177,7 +179,7 @@ static void MX_TIM3_Encoder_Init(void)
     encoder.IC2Selection = TIM_ICSELECTION_DIRECTTI;
     encoder.IC2Prescaler = TIM_ICPSC_DIV1;
     encoder.IC2Filter = 3;
-    HAL_TIM_Encoder_Init(&htim3, &encoder);
+    HAL_TIM_Encoder_Init(&htim1, &encoder);
 }
 
 static void MX_GPIO_Init(void)
@@ -196,10 +198,10 @@ static void MX_GPIO_Init(void)
     gpio.Speed = GPIO_SPEED_FREQ_HIGH;
     HAL_GPIO_Init(GPIOA, &gpio);
 
-    /* PA6/PA7: pulled-up inputs, suitable for encoder A/B if wired there.
+    /* PA8/PA9: pulled-up inputs, used as TIM1_CH1/CH2 encoder inputs.
      * GPIOA_CRL selects input-pull mode and GPIOA_ODR selects pull-up.
      */
-    gpio.Pin = GPIO_PIN_6 | GPIO_PIN_7;
+    gpio.Pin = GPIO_PIN_8 | GPIO_PIN_9;
     gpio.Mode = GPIO_MODE_INPUT;
     gpio.Pull = GPIO_PULLUP;
     HAL_GPIO_Init(GPIOA, &gpio);
