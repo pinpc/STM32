@@ -71,7 +71,8 @@ int main(void)
     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
     HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_ALL);
 
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0 | GPIO_PIN_1, GPIO_PIN_SET);
+    /* R_EN and L_EN are wired together and controlled by PB0. */
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
     Motor_SetSignedPwm(0); /* safe startup: motor remains stopped */
 
     xTaskCreate(MotorTask, "Motor", 256, NULL, 2, NULL);
@@ -206,11 +207,11 @@ static void MX_GPIO_Init(void)
     gpio.Pull = GPIO_PULLUP;
     HAL_GPIO_Init(GPIOA, &gpio);
 
-    /* PB0/PB1: low-speed push-pull outputs. ODR is set high in main() before
-     * starting with zero PWM; verify that HIGH is the safe/disabled level for
-     * the particular motor driver before connecting the motor.
+    /* PB0: low-speed push-pull output for the common R_EN/L_EN enable line.
+     * ODR is set high in main() before starting with zero PWM; verify that
+     * HIGH is the enabled level for the particular motor driver.
      */
-    gpio.Pin = GPIO_PIN_0 | GPIO_PIN_1;
+    gpio.Pin = GPIO_PIN_0;
     gpio.Mode = GPIO_MODE_OUTPUT_PP;
     gpio.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOB, &gpio);

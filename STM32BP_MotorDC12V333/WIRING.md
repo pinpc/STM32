@@ -9,10 +9,10 @@ herstellen.
 
 | Blue Pill STM32F103C8T6 | IBT-2 | Funktion im Programm |
 |---|---|---|
-| PA0 | RPWM | TIM2_CH1, PWM fuer Drehrichtung 1 |
-| PA1 | LPWM | TIM2_CH2, PWM fuer Drehrichtung 2 |
-| PB0 | R_EN | Enable-Ausgang; wird beim Start auf HIGH gesetzt |
-| PB1 | L_EN | Enable-Ausgang; wird beim Start auf HIGH gesetzt |
+| PA0 | LPWM | TIM2_CH1, PWM fuer Drehrichtung 1 |
+| PA1 | RPWM | TIM2_CH2, PWM fuer Drehrichtung 2 |
+| PB0 | R_EN und L_EN | Gemeinsamer Enable-Ausgang; wird beim Start auf HIGH gesetzt |
+| PB1 | — | Nicht angeschlossen und nicht von der Firmware verwendet |
 | GND | GND | Gemeinsame Signalmasse |
 | — | R_IS, L_IS | Strommess-Ausgaenge; derzeit nicht verwendet, isoliert lassen |
 
@@ -45,12 +45,15 @@ schalten.
 | Kanal A / C1 | PA8 | TIM1_CH1 |
 | Kanal B / C2 | PA9 | TIM1_CH2 |
 | Encoder-GND | GND | Gemeinsame Masse |
-| Encoder-VCC | Versorgung gemaess Motordatenblatt | Encoder-Versorgung |
+| Encoder-VCC | 3.3 V vom Blue Pill | Encoder-Versorgung |
 
 PA8 und PA9 sind im Programm als Eingänge mit Pull-up konfiguriert und werden
 von TIM1 im Quadratur-Encoder-Modus gelesen. Vor dem Verbinden der Encoder-
-Signale sicherstellen, dass deren HIGH-Pegel maximal 3.3 V betraegt. Falls der
-Encoder 5 V-Signale ausgibt, einen geeigneten Pegelwandler verwenden. Die
+Signale sicherstellen, dass deren HIGH-Pegel maximal 3.3 V betraegt. Der
+Encoder-VCC wird hier mit 3.3 V vom Blue Pill verbunden; das ist nur zulaessig,
+wenn die konkrete Encoder-Variante fuer 3.3 V Versorgung spezifiziert ist.
+Falls der Encoder 5 V Versorgung benoetigt oder 5 V-Signale ausgibt, einen
+geeigneten Pegelwandler bzw. eine passende Versorgung verwenden. Die
 Kabelfarben und die Encoder-Versorgung unterscheiden sich je nach JGB37-520-
 Variante; Pinbelegung am konkreten Motor/Datenblatt pruefen.
 
